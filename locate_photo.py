@@ -7,7 +7,7 @@ import os
 
 '''
 author: BW
-vision: 1.0
+vision: 1.1
 '''
 
  
@@ -26,6 +26,7 @@ def find_GPS_image(pic_path):
     return: Info
     '''
     Device = {}
+    Photo = {}
     GPS = {}
     date = ''
     with open(pic_path, 'rb') as f: 
@@ -38,6 +39,10 @@ def find_GPS_image(pic_path):
                 Device['具体型号'] = str(value)  
             if re.match('EXIF LensModel', tag):              
                 Device['摄像头信息'] = str(value) 
+            if re.match('EXIF ExifImageWidth', tag):     # 照片像素信息           
+                Photo['宽'] = str(value)
+            if re.match('EXIF ExifImageLength', tag):             
+                Photo['长'] = str(value)
             if re.match('GPS GPSLatitudeRef', tag):          
                 GPS['GPSLatitudeRef'] = str(value)           # N/S = 北/南纬 
             elif re.match('GPS GPSLongitudeRef', tag):                      # 这里用elif，否则匹配出问题
@@ -54,7 +59,7 @@ def find_GPS_image(pic_path):
                 GPS['GPSAltitude'] = str(value)     
             elif re.match('.*Date.*', tag):
                 date = str(value)                  # 日期              
-    return {'GPS_information': GPS, 'date_information': date, 'Device_information': Device}
+    return {'GPS_information': GPS, 'date_information': date, 'Device_information': Device, 'Photo_information': Photo}
  
 def find_address_from_GPS(Info):
     """
@@ -97,10 +102,12 @@ if __name__ == '__main__':
         print("GPS：", Info['GPS_information'])
         print('拍摄时间：', Info['date_information'])
         print('设备信息：', Info['Device_information'])
+        print('照片信息：', Info['Photo_information'])
     except:
         print('没有位置信息。以下为可获取的信息：')
         print("GPS：", Info['GPS_information'])
         print('拍摄时间：', Info['date_information'])
         print('设备信息：', Info['Device_information'])
+        print('照片信息：', Info['Photo_information'])   # 12M: 4000*3000左右   7M: 3000*2300左右 区分是否自拍
     
     
